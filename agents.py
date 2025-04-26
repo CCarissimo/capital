@@ -45,4 +45,3 @@ def e_greedy_select_action(Q, S, epsilon, indices=None):
     A = np.where(rand >= epsilon, greedyA, randA)
 
     return A
-

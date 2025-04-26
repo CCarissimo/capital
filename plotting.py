@@ -4,7 +4,7 @@ import numpy as np
 from processes import gini
 
 
-def plot_dashboard(M):
+def plot_dashboard(M, save=False):
     times = sorted(M.keys())  # sort timestamps
     n_times = len(times)
 
@@ -33,6 +33,7 @@ def plot_dashboard(M):
     axs[1].set_xlabel("Time")
     axs[1].set_ylabel("Produced")
     axs[1].set_yscale("log")
+    # axs[1].set_ylim((10e-2, max(produced_padded)))
 
     # --- Plot capitals ---
     axs[2].plot(times, capitals)
@@ -71,4 +72,6 @@ def plot_dashboard(M):
     axs[6].set_ylabel("Gini")
 
     plt.tight_layout()
+    if save:
+        plt.savefig("last_run.png")
     plt.show()

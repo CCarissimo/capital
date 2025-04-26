@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     from plotting import plot_dashboard
 
-    n_agents = 100
+    n_agents = 1000
     n_processes = 10
 
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
@@ -154,4 +154,4 @@ if __name__ == "__main__":
         p_elasticities
     )
 
-    plot_dashboard(M)
+    plot_dashboard(M, save=True)

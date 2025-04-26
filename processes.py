@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def production(multiplier, elasticity, capital, labour):
     return multiplier*capital**(elasticity)*labour**(1-elasticity)
 
