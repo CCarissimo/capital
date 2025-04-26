@@ -125,8 +125,8 @@ if __name__ == "__main__":
 
     from plotting import plot_dashboard
 
-    n_agents = 10
-    n_processes = 2
+    n_agents = 100
+    n_processes = 10
 
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
