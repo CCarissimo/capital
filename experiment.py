@@ -6,13 +6,13 @@ from typing import Union
 
 
 @dataclass
-class capital_labour_experiment:
+class capitalLabourExperimentConfig:
     n_iter: int
-    epsilon: float
-    alpha: float
-    gamma: float
     n_agents: int
     n_processes: int
+    alpha: float
+    epsilon: float
+    gamma: float
     wants: Union[int, np.ndarray]
     capitals: Union[int, np.ndarray]
     timenergy: Union[int, np.ndarray]
@@ -108,6 +108,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
 
         # print("final capitals", capitals)
+        n_capitalists = np.sum(roles)
+        n_labourers = n_agents - n_capitalists
 
         M[t] = {
             "A": actions,
@@ -115,7 +117,9 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "C": capitals,
             "Cp": capital_allocations,
             "Lp": labour_allocations,
-            "R": rewards
+            "R": rewards,
+            "nL": n_labourers,
+            "nC": n_capitalists,
         }
 
     return M
@@ -124,6 +128,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 if __name__ == "__main__":
 
     from plotting import plot_dashboard
+    from analysis import run_analysis
 
     n_agents = 1000
     n_processes = 10
@@ -135,7 +140,7 @@ if __name__ == "__main__":
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
-    n_iter = 1000
+    n_iter = 10000
     epsilon = 0.1
     alpha = 0.1
     gamma = 0
@@ -155,3 +160,5 @@ if __name__ == "__main__":
     )
 
     plot_dashboard(M, save=True)
+
+    # run_analysis(M, capitals, wants)
