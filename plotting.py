@@ -19,6 +19,9 @@ def plot_dashboard(M, save=False):
     elasticities = np.array([M[t]["E"] for t in times])
     wants = np.array([M[t]["W"] for t in times])
 
+    n_labourers = np.array([M[t]["nL"] for t in times])
+    n_capitalists = np.array([M[t]["nC"] for t in times])
+    
     # --- Plot actions ---
     sns.heatmap(actions.T, ax=axs[0], cbar=True)
     axs[0].set_title("Actions over time")
@@ -38,7 +41,14 @@ def plot_dashboard(M, save=False):
     # axs[1].set_ylim((10e-2, max(produced_padded)))
 
     # --- Plot capitals ---
-    axs[2].plot(times, capitals)
+    if capitals.shape[1] > 10:
+        avg_capitals = np.mean(capitals, axis=1)
+        std_capitals = np.std(capitals, axis=1)
+        axs[2].plot(times, avg_capitals)
+        axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
+    else:
+        axs[2].plot(times, capitals)
+    
     axs[2].set_title("Capitals per agent")
     axs[2].set_xlabel("Time")
     axs[2].set_ylabel("Capital")
@@ -60,8 +70,15 @@ def plot_dashboard(M, save=False):
     axs[4].set_ylabel("Num Allocations")
 
     # --- Plot rewards ---
-    axs[5].plot(times, rewards)
-    axs[5].set_title("Rewards per agent")
+    if rewards.shape[1] > 10:
+        avg_rewards = np.mean(rewards, axis=1)
+        std_rewards = np.std(rewards, axis=1)
+        axs[5].plot(times, avg_rewards)
+        axs[5].fill_between(times, avg_rewards - std_rewards, avg_rewards + std_rewards, color='blue', alpha=0.2, label='±1 Std Dev')
+    else:
+        axs[5].plot(times, rewards)
+    
+    axs[5].set_title("Rewards per agent or mean")
     axs[5].set_xlabel("Time")
     axs[5].set_ylabel("Reward")
     axs[5].set_yscale("log")
@@ -82,6 +99,10 @@ def plot_dashboard(M, save=False):
     axs[8].set_title("Agent Wants")
     axs[8].set_xlabel("Time")
     axs[8].set_ylabel("W")
+
+    axs[9].plot(times, n_labourers, color='red')
+    axs[9].plot(times, n_capitalists, color='blue')
+    axs[9].set_xlabel("Time")
 
     plt.tight_layout()
     if save:

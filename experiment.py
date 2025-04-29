@@ -141,15 +141,16 @@ if __name__ == "__main__":
     from plotting import plot_dashboard
     # from analysis import run_analysis
 
-    n_agents = 100
-    n_processes = 2
-    
+    # n_agents = 2
+    # n_processes = 1
     # wants = np.array([10.0, 100.0])
     # capitals = np.array([100.0, 10.0])
     # timenergy = np.array([50, 50])
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
-    
+
+    n_agents = 100
+    n_processes = 10
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*50
