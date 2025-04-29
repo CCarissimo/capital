@@ -8,7 +8,7 @@ def plot_dashboard(M, save=False):
     times = sorted(M.keys())  # sort timestamps
     n_times = len(times)
 
-    fig, axs = plt.subplots(2, 4, figsize=(12, 7))
+    fig, axs = plt.subplots(2, 5, figsize=(12, 7))
     axs = axs.flatten()
 
     # Collect time series
@@ -16,6 +16,8 @@ def plot_dashboard(M, save=False):
     produced = [M[t]["Y"] for t in times]  # list of arrays (size n_processes)
     capitals = np.array([M[t]["C"] for t in times])  # (n_times, n_agents)
     rewards = np.array([M[t]["R"] for t in times])  # (n_times, n_agents)
+    elasticities = np.array([M[t]["E"] for t in times])
+    wants = np.array([M[t]["W"] for t in times])
 
     # --- Plot actions ---
     sns.heatmap(actions.T, ax=axs[0], cbar=True)
@@ -70,6 +72,16 @@ def plot_dashboard(M, save=False):
     axs[6].set_title("Gini Coefficient (Capital Inequality)")
     axs[6].set_xlabel("Time")
     axs[6].set_ylabel("Gini")
+
+    axs[7].plot(times, elasticities)
+    axs[7].set_title("Process Elasticities")
+    axs[7].set_xlabel("Time")
+    axs[7].set_ylabel("e")
+
+    axs[8].plot(times, wants)
+    axs[8].set_title("Agent Wants")
+    axs[8].set_xlabel("Time")
+    axs[8].set_ylabel("W")
 
     plt.tight_layout()
     if save:

@@ -3,6 +3,7 @@ from processes import *
 from agents import *
 from dataclasses import dataclass
 from typing import Union
+import copy
 
 
 @dataclass
@@ -121,14 +122,18 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "R": rewards,
             "nL": n_labourers,
             "nC": n_capitalists,
+            "E": copy.deepcopy(p_elasticities),
+            "W": wants
         }
 
         ## evolution steps
 
-        # wants = evolve_agent_wants(capitals, wants)
-        # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
-        # Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
-        # Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+        wants = evolve_agent_wants(capitals, wants)
+        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+
+        print(p_elasticities)
 
     return M
 
@@ -138,7 +143,7 @@ if __name__ == "__main__":
     from plotting import plot_dashboard
     # from analysis import run_analysis
 
-    n_agents = 1000
+    n_agents = 100
     n_processes = 10
     
     # wants = np.array([10.0, 100.0])
