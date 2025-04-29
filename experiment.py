@@ -76,8 +76,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
             #  print("capitals", capitals)
 
-            if worked_processes.size > 0:
-                capitals[capitalists] = np.where(capitalists_actions in worked_processes, 0, capitals[capitalists])
+            mask = np.isin(capitalists_actions, worked_processes)
+            capitals[capitalists] = np.where(mask, 0, capitals[capitalists])
 
             # print("capitals", capitals)
 
@@ -138,20 +138,20 @@ if __name__ == "__main__":
     from plotting import plot_dashboard
     # from analysis import run_analysis
 
-    n_agents = 2
-    n_processes = 1
+    n_agents = 1000
+    n_processes = 10
     
-    wants = np.array([10.0, 100.0])
-    capitals = np.array([100.0, 10.0])
-    timenergy = np.array([50, 50])
-    p_multipliers = np.array([4])
-    p_elasticities = np.array([0.2])
+    # wants = np.array([10.0, 100.0])
+    # capitals = np.array([100.0, 10.0])
+    # timenergy = np.array([50, 50])
+    # p_multipliers = np.array([4])
+    # p_elasticities = np.array([0.8])
     
-    # wants = np.random.randint(1, 100, size=n_agents).astype(float)
-    # capitals = np.random.randint(1, 100, size=n_agents).astype(float)
-    # timenergy = np.ones(n_agents)*50
-    # p_multipliers = np.random.random(size=n_processes)*10
-    # p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
+    wants = np.random.randint(1, 100, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
+    timenergy = np.ones(n_agents)*50
+    p_multipliers = np.random.random(size=n_processes)*10
+    p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
     
     n_iter = 1000
