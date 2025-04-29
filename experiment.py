@@ -133,8 +133,6 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
         Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
 
-        print(p_elasticities)
-
     return M
 
 
@@ -144,7 +142,7 @@ if __name__ == "__main__":
     # from analysis import run_analysis
 
     n_agents = 100
-    n_processes = 10
+    n_processes = 2
     
     # wants = np.array([10.0, 100.0])
     # capitals = np.array([100.0, 10.0])
@@ -158,9 +156,8 @@ if __name__ == "__main__":
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
-    
     n_iter = 1000
-    epsilon = 0.1
+    epsilon = 0.01
     alpha = 0.1
     gamma = 0
 
