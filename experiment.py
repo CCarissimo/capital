@@ -125,10 +125,10 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         ## evolution steps
 
-        wants = evolve_agent_wants(capitals, wants)
-        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
-        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
-        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+        # wants = evolve_agent_wants(capitals, wants)
+        # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        # Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        # Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
 
     return M
 
