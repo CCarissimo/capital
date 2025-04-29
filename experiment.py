@@ -140,22 +140,21 @@ if __name__ == "__main__":
 
     n_agents = 2
     n_processes = 1
-
+    
     wants = np.array([10.0, 100.0])
     capitals = np.array([100.0, 10.0])
     timenergy = np.array([50, 50])
+    p_multipliers = np.array([4])
+    p_elasticities = np.array([0.2])
     
     # wants = np.random.randint(1, 100, size=n_agents).astype(float)
     # capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     # timenergy = np.ones(n_agents)*50
-
     # p_multipliers = np.random.random(size=n_processes)*10
     # p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
-    p_multipliers = np.array([4])
-    p_elasticities = np.array([0.2])
     
-    n_iter = 200
+    n_iter = 1000
     epsilon = 0.1
     alpha = 0.1
     gamma = 0
