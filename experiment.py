@@ -122,6 +122,13 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "nC": n_capitalists,
         }
 
+        ## evolution steps
+
+        wants = evolve_agent_wants(capitals, wants)
+        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+
     return M
 
 
@@ -130,7 +137,7 @@ if __name__ == "__main__":
     from plotting import plot_dashboard
     from analysis import run_analysis
 
-    n_agents = 1000
+    n_agents = 100
     n_processes = 10
 
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
@@ -140,7 +147,7 @@ if __name__ == "__main__":
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
-    n_iter = 10000
+    n_iter = 1000
     epsilon = 0.1
     alpha = 0.1
     gamma = 0

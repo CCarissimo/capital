@@ -30,3 +30,10 @@ def gini(array):
     cumulative = np.cumsum(array)
     gini_coef = (2 * np.sum((np.arange(1, n + 1)) * array)) / (n * cumulative[-1]) - (n + 1) / n
     return gini_coef
+
+
+def evolve_processes(elasticities, capital_allocations):
+    not_funded_processes = np.nonzero(capital_allocations == 0)[0]
+    random_elasticity = np.random.random(len(not_funded_processes))
+    elasticities[not_funded_processes] = random_elasticity
+    return elasticities, not_funded_processes

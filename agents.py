@@ -45,3 +45,32 @@ def e_greedy_select_action(Q, S, epsilon, indices=None):
     A = np.where(rand >= epsilon, greedyA, randA)
 
     return A
+
+
+def evolve_agent_wants(capitals, wants):
+    insolvent_agents = np.where(capitals == 0, 1, 0)
+    random_mutation = np.random.randint(1, 3, size=len(wants))
+    wants += insolvent_agents * random_mutation
+    wants += np.invert(insolvent_agents) * random_mutation
+    return wants
+
+
+def q_table_replace_process(Q, indices):
+    n_agents = Q.shape[0]
+    n_new = len(indices)
+
+    q_min = Q.min()
+    q_max = Q.max()
+
+    # Generate random values in shape (n_agents, n_new)
+    random_values = np.random.random((n_agents, n_new)) * (q_max - q_min) + q_min
+
+    # Prepare advanced indices
+    agent_indices = np.arange(n_agents)[:, None]     # Shape: (n_agents, 1)
+    action_indices = np.array(indices)[None, :]      # Shape: (1, n_new)
+
+    # Assign values
+    Q[agent_indices, 0, action_indices] = random_values
+
+    return Q
+
