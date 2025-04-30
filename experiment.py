@@ -23,8 +23,8 @@ class capitalLabourExperimentConfig:
 
 def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities, p_redistribution):
 
-    Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 0.1
-    Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 0.1
+    Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 100
+    Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 100
     S = np.zeros((n_agents)).astype(int)
     redistribution_thresholds = p_redistribution
 
@@ -35,13 +35,19 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         # print("iteration", t)
         surplus = capitals - wants
         potential_capitalists = np.where(surplus > 0, 1, 0)
+        Q_combined = np.stack([Q_labour.max(axis=2), Q_capital.max(axis=2)], axis=-1)
+        # argmax_roles = Q_combined.argmax(axis=-1).flatten()
+        argmax_roles = e_greedy_select_action(Q_combined, S, epsilon)
 
-        Q_combined = np.stack([Q_capital.max(axis=2), Q_labour.max(axis=2)], axis=-1)
-
-        argmax_roles = Q_combined.argmax(axis=-1).flatten()
-        roles = np.where(potential_capitalists == 1, argmax_roles, 0)
+        # print(surplus)
+        # print("qc", Q_capital)
+        # print("ql", Q_labour)
+        # print(Q_combined.shape)
+        # print(Q_capital.shape)
+        # print(argmax_roles)
 
         # labourers are 0 and capitalists are 1
+        roles = np.where(potential_capitalists == 1, argmax_roles, 0)
         #roles = np.where(wants > capitals, 0, 1)
 
         actions = np.where(roles == 1, e_greedy_select_action(Q_capital, S, epsilon), 0)
@@ -51,7 +57,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         # print("capitalists", capitalists)
 
-        capital_kinetic = capitals[capitalists]
+        capital_kinetic = surplus[capitalists]
         labour_kinetic = timenergy[labourers]
 
         # print("kinetic capital", capital_kinetic)
@@ -165,9 +171,9 @@ if __name__ == "__main__":
 
     n_agents = 100
     n_processes = 2
-    wants = np.random.randint(1, 100, size=n_agents).astype(float)
-    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
-    timenergy = np.ones(n_agents)*50
+    wants = np.random.randint(1, 10, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 1000, size=n_agents).astype(float)
+    timenergy = np.ones(n_agents)*10
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.ones(n_processes) * 0.5  # np.clip(np.random.random(size=n_processes), 0, 0.9)  # np.array([0.04765849, 0.04537723])
     p_redistribution = p_elasticities
