@@ -36,5 +36,5 @@ def evolve_processes(elasticities, capital_allocations):
     not_funded_processes = np.nonzero(capital_allocations == 0)[0]
     # random_elasticity = np.random.random(len(not_funded_processes))
     random_mutation = np.random.normal(0, 0.1, size=len(not_funded_processes))
-    elasticities[not_funded_processes] = random_mutation
+    elasticities[not_funded_processes] += random_mutation
     return np.clip(elasticities, 0, 1), not_funded_processes
