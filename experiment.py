@@ -78,6 +78,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capital_allocations = np.array(
             [np.where(capitalists_actions == i, capital_kinetic, 0).sum() for i in range(n_processes)])
 
+        capitals[capitalists] -= surplus[capitalists]
+
         funded_processes = np.nonzero(capital_allocations > 0)[0]
         # print(funded_processes)
 
@@ -130,8 +132,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
 
-        capitals[capitalists] = rewards[capitalists] #* capital_kinetic
-        capitals[labourers] = rewards[labourers] #* labour_kinetic
+        capitals[capitalists] += rewards[capitalists] #* capital_kinetic
+        capitals[labourers] += rewards[labourers] #* labour_kinetic
 
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
 
@@ -183,12 +185,12 @@ if __name__ == "__main__":
     timenergy = np.ones(n_agents)*50
     p_multipliers = np.random.random(size=n_processes)*10
     
-    # p_elasticities = np.ones(n_processes) * 0.5  
+    # p_elasticities = np.ones(n_processes) * 0.5
     p_elasticities = np.clip(np.random.random(size=n_processes), 0, 0.9)
     
     p_redistribution = p_elasticities
 
-    n_iter = 2000
+    n_iter = 10000
     epsilon = 0.01
     alpha = 0.1
     gamma = 0
