@@ -171,8 +171,8 @@ if __name__ == "__main__":
 
     n_agents = 100
     n_processes = 2
-    wants = np.random.randint(1, 10, size=n_agents).astype(float)
-    capitals = np.random.randint(1, 1000, size=n_agents).astype(float)
+    wants = np.random.randint(1, 100, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*10
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.ones(n_processes) * 0.5  # np.clip(np.random.random(size=n_processes), 0, 0.9)  # np.array([0.04765849, 0.04537723])

@@ -64,7 +64,7 @@ def plot_dashboard(M, save=False):
 
     # --- Plot labour allocations ---
     lab_alloc_sizes = [M[t]["Lp"] for t in times]
-    axs[4].plot(times, lab_alloc_sizes, marker='x', color='orange')
+    axs[4].plot(times, lab_alloc_sizes, marker='x')
     axs[4].set_title("Labour allocations (number)")
     axs[4].set_xlabel("Time")
     axs[4].set_ylabel("Num Allocations")
