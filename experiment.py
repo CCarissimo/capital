@@ -21,12 +21,12 @@ class capitalLabourExperimentConfig:
     p_elasticities: np.ndarray
 
 
-def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities):
+def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities, p_redistribution):
 
     Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 0.1
     Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 0.1
     S = np.zeros((n_agents)).astype(int)
-    redistribution_thresholds = p_multipliers
+    redistribution_thresholds = p_redistribution
 
     M = {}
 
@@ -90,12 +90,17 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             #  print("produced", produced)
 
             returns = np.array([redistribution(Y, e, c, l) for Y, e, c, l in
-                                list(zip(produced, p_elasticities, capital_allocations, labour_allocations))])
+                                list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
             #  print("returns", returns)
 
             rewards = np.zeros(n_agents)
             rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])
             rewards[capitalists] = np.array([returns[a, 1] for a in actions[capitalists]])
+
+            allocations = np.zeros(n_agents)
+            allocations[labourers] = labour_kinetic
+            allocations[capitalists] = capital_kinetic
+            rewards = rewards * allocations
 
         # print("rewards", rewards)
 
@@ -104,8 +109,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
 
-        capitals[capitalists] += rewards[capitalists] * capital_kinetic
-        capitals[labourers] += rewards[labourers] * labour_kinetic
+        capitals[capitalists] += rewards[capitalists] #* capital_kinetic
+        capitals[labourers] += rewards[labourers] #* labour_kinetic
 
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
 
@@ -128,10 +133,10 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         ## evolution steps
 
-        wants = evolve_agent_wants(capitals, wants)
-        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
-        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
-        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+        # wants = evolve_agent_wants(capitals, wants)
+        # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        # Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        # Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
 
     return M
 
@@ -149,16 +154,17 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 100
-    n_processes = 10
+    n_agents = 1000
+    n_processes = 2
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*50
     p_multipliers = np.random.random(size=n_processes)*10
-    p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
+    p_elasticities = np.ones(n_processes) * 0.5  # np.clip(np.random.random(size=n_processes), 0, 0.9)  # np.array([0.04765849, 0.04537723])
+    p_redistribution = p_elasticities
 
     n_iter = 1000
-    epsilon = 0.01
+    epsilon = 0.1
     alpha = 0.1
     gamma = 0
 
@@ -173,7 +179,8 @@ if __name__ == "__main__":
         capitals,
         timenergy,
         p_multipliers,
-        p_elasticities
+        p_elasticities,
+        p_redistribution
     )
 
     plot_dashboard(M, save=True)
