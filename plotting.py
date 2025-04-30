@@ -46,6 +46,7 @@ def plot_dashboard(M, save=False):
         std_capitals = np.std(capitals, axis=1)
         axs[2].plot(times, avg_capitals)
         axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
+        axs[2].plot(times, np.sum(capitals, axis=1), color='green', label='capital sum')
     else:
         axs[2].plot(times, capitals)
     

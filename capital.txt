@@ -1,0 +1,37 @@
+the number of available processes could be related to capital - more capital - more processes visible (the ones with higher capital returns)
+    
+Wants could be related to capital - the more capital you have the bigger your wants (needs) - more money more problem - in a similar vein the need could work as a percentage instead a flat cost like now
+
+
+Comments on runs 
+
+    n_agents = 100
+    n_processes = 2
+    wants = np.random.randint(1, 10, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
+    timenergy = np.ones(n_agents)*50
+    p_multipliers = np.random.random(size=n_processes)*10
+    
+    # p_elasticities = np.ones(n_processes) * 0.5  
+    p_elasticities = np.clip(np.random.random(size=n_processes), 0, 0.9)
+
+outcomes: 
+
+With evolution
+1. stabilisation - capital is constant or growing asymptotically, evolution stops, interestingly population of capitalists decline 
+2. oscillation - capital and everything else oscillates, evolution runs 
+3. death - capital goes to 0, 100% labor, evolution runs but has no effects, death can occur after a period of stabilisation ()
+4. runaway - capital continuous to grow, evolution stops (this is the result of a process reaching elasticity of 1) interestingly population of capitalists has a downward trend
+
+the death spiral occurring during a period of stability can be stopped by the processes and wants adjusting 
+
+if it's not stopped it's weird, i'm not really sure why it happens, it's like suddenly they all choose the same process, but maybe that is the result not the cause, i guess it's because of a breakdown of coordination - no labor is provided for one process which makes all the investors lose money and become laborers, then the last remaining capitalist who is sponsoring the only working process goes mad and invests in the failed process losing all their money, now everyone is an unemployed laborer OR it's just that everyone becomes a capitalist and loses everything, the weird thing is everyone becomes capitalist very rapidly - it can go from 10 to 100 in one step
+
+it seems during the period of stability the population of capitalists declines - they lose all their capital and switch to labor which is apparently so rewarding they never invest again, alternatively everyone becomes a capitalist with the same result
+
+Without evolution
+1. stabilisation - much more common than with evolution, small population of capitalists, large population of laborers, one process is dominant 
+2. death - everybody becomes a laborer 
+
+my guess that the death spiral is caused by evolution 
+

@@ -29,9 +29,16 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
     redistribution_thresholds = p_redistribution
 
     M = {}
+    death_counter = 0
 
     for t in range(n_iter):
 
+        if np.sum(capitals) == 0:
+            death_counter += 1
+            if death_counter > 100:
+                print(np.sum(roles))
+                break
+        
         # print("iteration", t)
         surplus = capitals - wants
         potential_capitalists = np.where(surplus > 0, 1, 0)
@@ -118,20 +125,20 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             rewards = rewards * allocations
 
         # print("rewards", rewards)
-
         # print(capitalists, Q_capital, S, actions, rewards, alpha, gamma)
 
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
 
-        capitals[capitalists] += rewards[capitalists] #* capital_kinetic
-        capitals[labourers] += rewards[labourers] #* labour_kinetic
+        capitals[capitalists] = rewards[capitalists] #* capital_kinetic
+        capitals[labourers] = rewards[labourers] #* labour_kinetic
 
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
 
         # print("final capitals", capitals)
         n_capitalists = np.sum(roles)
         n_labourers = n_agents - n_capitalists
+
 
         M[t] = {
             "A": actions,
@@ -160,7 +167,7 @@ if __name__ == "__main__":
 
     from plotting import plot_dashboard
     # from analysis import run_analysis
-
+    
     # n_agents = 2
     # n_processes = 1
     # wants = np.array([10.0, 100.0])
@@ -172,16 +179,19 @@ if __name__ == "__main__":
     n_agents = 100
     n_processes = 2
     wants = np.random.randint(1, 10, size=n_agents).astype(float)
-    capitals = np.random.randint(1, 1000, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*50
     p_multipliers = np.random.random(size=n_processes)*10
-    p_elasticities = np.ones(n_processes) * 0.5  # np.clip(np.random.random(size=n_processes), 0, 0.9)  # np.array([0.04765849, 0.04537723])
+    
+    # p_elasticities = np.ones(n_processes) * 0.5  
+    p_elasticities = np.clip(np.random.random(size=n_processes), 0, 0.9)
+    
     p_redistribution = p_elasticities
 
-    n_iter = 10000
+    n_iter = 2000
     epsilon = 0.01
     alpha = 0.1
-    gamma = 0.2
+    gamma = 0
 
     M = run_capital_labour_processes(
         n_iter,
