@@ -75,7 +75,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
             worked_processes = np.nonzero(labour_allocations > 0)[0]
 
-            #  print("capitals", capitals)
+            # print("capitals", capitals)
 
             mask = np.isin(capitalists_actions, worked_processes)
             capitals[capitalists] = np.where(mask, 0, capitals[capitalists])
@@ -83,15 +83,15 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             # print("capitals", capitals)
 
             # print("capital to process", capital_allocations)
-            #  print("labour to process", labour_allocations)
+            # print("labour to process", labour_allocations)
 
             produced = [production(m, e, c, l) for m, e, c, l in
                         list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
-            #  print("produced", produced)
+            # print("produced", produced)
 
             returns = np.array([redistribution(Y, e, c, l) for Y, e, c, l in
                                 list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
-            #  print("returns", returns)
+            # print("returns", returns)
 
             rewards = np.zeros(n_agents)
             rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])
