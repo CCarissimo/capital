@@ -141,8 +141,8 @@ if __name__ == "__main__":
     from plotting import plot_dashboard
     # from analysis import run_analysis
 
-    n_agents = 100
-    n_processes = 2
+    n_agents = 1000
+    n_processes = 10
     
     # wants = np.array([10.0, 100.0])
     # capitals = np.array([100.0, 10.0])
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.random.random(size=n_processes)  # np.array([0.04765849, 0.04537723])
 
-    n_iter = 1000
+    n_iter = 10000
     epsilon = 0.01
     alpha = 0.1
     gamma = 0
