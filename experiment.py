@@ -33,8 +33,17 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
     for t in range(n_iter):
 
         # print("iteration", t)
+        surplus = capitals - wants
+        potential_capitalists = np.where(surplus > 0, 1, 0)
 
-        roles = np.where(wants > capitals, 0, 1)
+        Q_combined = np.stack([Q_capital.max(axis=2), Q_labour.max(axis=2)], axis=-1)
+
+        argmax_roles = Q_combined.argmax(axis=-1).flatten()
+        roles = np.where(potential_capitalists == 1, argmax_roles, 0)
+
+        # labourers are 0 and capitalists are 1
+        #roles = np.where(wants > capitals, 0, 1)
+
         actions = np.where(roles == 1, e_greedy_select_action(Q_capital, S, epsilon), 0)
 
         capitalists = np.nonzero(roles == 1)[0]
@@ -154,7 +163,7 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 1000
+    n_agents = 100
     n_processes = 2
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
