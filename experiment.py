@@ -29,9 +29,16 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
     redistribution_thresholds = p_redistribution
 
     M = {}
+    death_counter = 0
 
     for t in range(n_iter):
 
+        if np.sum(capitals) == 0:
+            death_counter += 1
+            if death_counter > 100:
+                print(np.sum(roles))
+                break
+        
         # print("iteration", t)
         surplus = capitals - wants
         potential_capitalists = np.where(surplus > 0, 1, 0)
@@ -160,7 +167,7 @@ if __name__ == "__main__":
 
     from plotting import plot_dashboard
     # from analysis import run_analysis
-
+    
     # n_agents = 2
     # n_processes = 1
     # wants = np.array([10.0, 100.0])
@@ -181,7 +188,7 @@ if __name__ == "__main__":
     
     p_redistribution = p_elasticities
 
-    n_iter = 1000
+    n_iter = 2000
     epsilon = 0.01
     alpha = 0.1
     gamma = 0
