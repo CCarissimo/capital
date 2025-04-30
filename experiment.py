@@ -148,10 +148,10 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         ## evolution steps
 
-        # wants = evolve_agent_wants(capitals, wants)
-        # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
-        # Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
-        # Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+        wants = evolve_agent_wants(capitals, wants)
+        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
 
     return M
 
@@ -171,17 +171,17 @@ if __name__ == "__main__":
 
     n_agents = 100
     n_processes = 2
-    wants = np.random.randint(1, 100, size=n_agents).astype(float)
-    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
-    timenergy = np.ones(n_agents)*10
+    wants = np.random.randint(1, 10, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 1000, size=n_agents).astype(float)
+    timenergy = np.ones(n_agents)*50
     p_multipliers = np.random.random(size=n_processes)*10
     p_elasticities = np.ones(n_processes) * 0.5  # np.clip(np.random.random(size=n_processes), 0, 0.9)  # np.array([0.04765849, 0.04537723])
     p_redistribution = p_elasticities
 
-    n_iter = 1000
-    epsilon = 0.1
+    n_iter = 10000
+    epsilon = 0.01
     alpha = 0.1
-    gamma = 0
+    gamma = 0.2
 
     M = run_capital_labour_processes(
         n_iter,
