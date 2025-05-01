@@ -49,8 +49,8 @@ def plot_dashboard(M, save=False):
         # axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
         axs[2].plot(times, np.sum(capitals, axis=1), color='green', label='capital sum')
 
-        axs[2].plot(times, (capitals * roles).sum(axis=1), color='blue')        
-        axs[2].plot(times, (capitals * (1 - roles)).sum(axis=1), color='red')
+        axs[2].plot(times, (capitals * roles).sum(axis=1)/roles.sum(), color='blue')        
+        axs[2].plot(times, (capitals * (1 - roles)).sum(axis=1)/(1-roles).sum(), color='red')
     else:
         axs[2].plot(times, capitals)
     
