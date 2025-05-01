@@ -18,7 +18,8 @@ def plot_dashboard(M, save=False):
     rewards = np.array([M[t]["R"] for t in times])  # (n_times, n_agents)
     elasticities = np.array([M[t]["E"] for t in times])
     wants = np.array([M[t]["W"] for t in times])
-
+    roles = np.array([M[t]["roles"] for t in times])
+    
     n_labourers = np.array([M[t]["nL"] for t in times])
     n_capitalists = np.array([M[t]["nC"] for t in times])
     
@@ -44,9 +45,12 @@ def plot_dashboard(M, save=False):
     if capitals.shape[1] > 10:
         avg_capitals = np.mean(capitals, axis=1)
         std_capitals = np.std(capitals, axis=1)
-        axs[2].plot(times, avg_capitals)
-        axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
+        # axs[2].plot(times, avg_capitals)
+        # axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
         axs[2].plot(times, np.sum(capitals, axis=1), color='green', label='capital sum')
+
+        axs[2].plot(times, (capitals * roles).sum(axis=1), color='blue')        
+        axs[2].plot(times, (capitals * (1 - roles)).sum(axis=1), color='red')
     else:
         axs[2].plot(times, capitals)
     
@@ -90,7 +94,6 @@ def plot_dashboard(M, save=False):
     axs[6].set_title("Gini Coefficient (Capital Inequality)")
     axs[6].set_xlabel("Time")
     axs[6].set_ylabel("Gini")
-    axs[6].set_ylim((0, 1))
 
     axs[7].plot(times, elasticities)
     axs[7].set_title("Process Elasticities")
