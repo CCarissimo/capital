@@ -152,7 +152,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "nL": n_labourers,
             "nC": n_capitalists,
             "E": copy.deepcopy(p_elasticities),
-            "W": wants
+            "W": wants,
+            "roles": roles
         }
 
         ## evolution steps
