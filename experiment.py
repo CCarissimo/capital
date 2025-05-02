@@ -48,6 +48,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         # labourers are 0 and capitalists are 1
 
+        # roles = argmax_roles
         roles = np.where(potential_capitalists == 1, argmax_roles, 0)
         #roles = np.where(wants > capitals, 0, 1)
 
@@ -76,7 +77,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             labour_allocations = np.zeros(n_processes)
 
         else:  # at least one process funded
-            actions = np.where(roles == 0, e_greedy_select_action(Q_labour, S, epsilon, funded_processes), actions)
+            actions = np.where(roles == 0, e_greedy_select_action(Q_labour, S, epsilon, indices=None), actions)
             labourers_actions = actions[labourers]
 
             labour_allocations = np.array(
@@ -89,8 +90,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
             produced = [production(m, e, c, l) for m, e, c, l in
                         list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
-
-            returns = np.array([redistribution(Y, e, c, l) for Y, e, c, l in
+            returns = np.array([redistribution(Y, e, c, l, np.sum(1 - roles)) for Y, e, c, l in
                                 list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
 
             rewards = np.zeros(n_agents)
@@ -101,7 +101,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             allocations[labourers] = labour_kinetic
             allocations[capitalists] = capital_kinetic
             rewards[capitalists] *= allocations[capitalists]
-            rewards[labourers] /= np.sum(1 - roles)
+            # rewards[labourers] /= np.sum(1 - roles)
 
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
@@ -110,8 +110,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capitals[labourers] += rewards[labourers] #* labour_kinetic
         
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
-
-        # print("final capitals", capitals)
+        # print(np.max(capitals[capitalists]), np.min(capitals[capitalists]), np.max(capitals[labourers]), np.min(capitals[labourers]))
+        
         n_capitalists = np.sum(roles)
         n_labourers = n_agents - n_capitalists
 
@@ -132,10 +132,10 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
         ## evolution steps
 
-        wants = evolve_agent_wants(capitals, wants)
-        p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
-        Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
-        Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
+        # wants = evolve_agent_wants(capitals, wants)
+        # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
+        # Q_capital = q_table_replace_process(Q_capital, dead_process_indices)
+        # Q_labour = q_table_replace_process(Q_labour, dead_process_indices)
 
     return M
 
