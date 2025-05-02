@@ -94,11 +94,13 @@ def plot_dashboard(M, save=False):
     axs[6].set_title("Gini Coefficient (Capital Inequality)")
     axs[6].set_xlabel("Time")
     axs[6].set_ylabel("Gini")
+    axs[6].set_ylim((0, 1))
 
     axs[7].plot(times, elasticities)
     axs[7].set_title("Process Elasticities")
     axs[7].set_xlabel("Time")
     axs[7].set_ylabel("e")
+    axs[7].set_ylim((0, 1))
 
     axs[8].plot(times, wants)
     axs[8].set_title("Agent Wants")
