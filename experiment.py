@@ -21,8 +21,8 @@ class capitalLabourExperimentConfig:
     p_elasticities: np.ndarray
 
 
-def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities, p_redistribution, p_wage):
-
+def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy,
+                                 p_multipliers, p_elasticities, p_redistribution, p_wage):
     Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 1000
     Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 1000
     S = np.zeros((n_agents)).astype(int)
@@ -60,7 +60,6 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capital_kinetic = surplus[capitalists]
         labour_kinetic = timenergy[labourers]
 
-
         capitalists_actions = actions[capitalists]
         # labourers_actions = actions[labourers]
 
@@ -90,31 +89,35 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
             produced = [production(m, e, c, l) for m, e, c, l in
                         list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
-            returns = np.array([redistribution(Y, e, c, l, np.sum(1 - roles)) for Y, e, c, l in
-                                list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
+            returns = np.array([redistribution(Y, e, w, c, l, np.sum(1 - roles)) for Y, e, w, c, l in
+                                list(zip(produced, redistribution_thresholds, p_wage, capital_allocations,
+                                         labour_allocations))])
 
             rewards = np.zeros(n_agents)
-            rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])
+            rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])\
+                                 /(capitals[labourers] + 10e-6)  # avoid division by zero
             rewards[capitalists] = np.array([returns[a, 1] for a in actions[capitalists]])
+
+            # print("rc", rewards[capitalists])
+            # print("rl", rewards[labourers])
 
             allocations = np.zeros(n_agents)
             allocations[labourers] = labour_kinetic
             allocations[capitalists] = capital_kinetic
-            rewards[capitalists] *= allocations[capitalists]
+            # rewards[capitalists] *= allocations[capitalists]
             # rewards[labourers] /= np.sum(1 - roles)
 
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
 
-        capitals[capitalists] += rewards[capitalists] #* capital_kinetic
-        capitals[labourers] += rewards[labourers] #* labour_kinetic
-        
+        capitals[capitalists] += rewards[capitalists]  # * capital_kinetic
+        capitals[labourers] += rewards[labourers]  # * labour_kinetic
+
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
         # print(np.max(capitals[capitalists]), np.min(capitals[capitalists]), np.max(capitals[labourers]), np.min(capitals[labourers]))
-        
+
         n_capitalists = np.sum(roles)
         n_labourers = n_agents - n_capitalists
-
 
         M[t] = {
             "A": actions,
@@ -141,10 +144,10 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
 
 if __name__ == "__main__":
-
     from plotting import plot_dashboard
+
     # from analysis import run_analysis
-    
+
     # n_agents = 2
     # n_processes = 1
     # wants = np.array([10.0, 100.0])
@@ -153,19 +156,20 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 100
-    n_processes = 1
+    n_agents = 1000
+    n_processes = 10
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
-    timenergy = np.ones(n_agents)*10
-    p_multipliers = np.random.random(size=n_processes)*10
-    
-    p_elasticities = np.ones(n_processes) * 0.5
-    # p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
+    timenergy = np.ones(n_agents) * 10
+    p_multipliers = np.random.random(size=n_processes) * 10
+
+    # p_elasticities = np.ones(n_processes) * 0.5
+    p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
     # p_elasticities = np.array([0.9, 0.9])
-    
+
     p_redistribution = p_elasticities
-    p_wage = np.ones(n_processes) * 1
+    # p_wage = np.ones(n_processes) * 10
+    p_wage = np.random.randint(1, 10, size=n_processes)
 
     n_iter = 10000
     epsilon = 0.1

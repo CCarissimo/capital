@@ -51,7 +51,7 @@ def evolve_agent_wants(capitals, wants):
     insolvent_agents = np.where(capitals == 0, 1, 0)
     random_mutation = np.random.randint(-3, 3, size=len(wants))
     wants += insolvent_agents * random_mutation
-    # wants += np.invert(insolvent_agents) * random_mutation
+    wants += np.invert(insolvent_agents) * random_mutation
     return np.where(wants < 1, 1, wants)
 
 

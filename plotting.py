@@ -107,6 +107,7 @@ def plot_dashboard(M, save=False):
     axs[8].set_title("Agent Wants")
     axs[8].set_xlabel("Time")
     axs[8].set_ylabel("W")
+    axs[8].set_yscale("log")
 
     axs[9].plot(times, n_labourers, color='red')
     axs[9].plot(times, n_capitalists, color='blue')
