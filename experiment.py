@@ -129,11 +129,17 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "nL": n_labourers,
             "nC": n_capitalists,
             "E": copy.deepcopy(p_elasticities),
-            "W": wants,
+            "W": copy.deepcopy(wants),
             "roles": roles
         }
 
         ## evolution steps
+        epoch_len = 100
+        if t % epoch_len == 0 and t != 0:
+            start = t - epoch_len
+            #process_fitness = [np.sum([M[step]["Y"][proc] for step in range(start, t)]) for proc in range(n_processes)]
+            agent_fitness = np.array([M[t]["C"][agent]/(M[start]["C"][agent]+10e-6) for agent in range(n_agents)])
+            wants = evolve_agents(wants, capitals, agent_fitness, 0.75, alpha)
 
         # wants = evolve_agent_wants(capitals, wants)
         # p_elasticities, dead_process_indices = evolve_processes(p_elasticities, capital_allocations)
@@ -157,11 +163,11 @@ if __name__ == "__main__":
     # p_elasticities = np.array([0.8])
 
     n_agents = 1000
-    n_processes = 10
+    n_processes = 2
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents) * 10
-    p_multipliers = np.random.random(size=n_processes) * 10
+    p_multipliers = np.random.random(size=n_processes) * 5
 
     # p_elasticities = np.ones(n_processes) * 0.5
     p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)

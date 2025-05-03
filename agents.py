@@ -55,6 +55,26 @@ def evolve_agent_wants(capitals, wants):
     return np.where(wants < 1, 1, wants)
 
 
+# def evolve_agents(wants, capitals, quantile, alpha):
+#     top_quantile = np.quantile(capitals, quantile)
+#     top_agents = np.nonzero(capitals > top_quantile)[0]
+#     top_wants_mean = np.mean(wants[top_agents])
+#     bottom_agents = np.nonzero(capitals < top_quantile)[0]
+#     random_mutation = np.random.randint(-10, 10, size=len(wants))
+#     wants[bottom_agents] = top_wants_mean * alpha + wants[bottom_agents]*(1-alpha)
+#     wants += random_mutation
+#     return np.where(wants < 1, 1, wants)
+
+def evolve_agents(wants, capitals, fitness, quantile, alpha):
+    top_quantile = np.quantile(fitness, quantile)
+    top_agents = np.nonzero(fitness > top_quantile)[0]
+    wants[top_agents] = wants[top_agents]*(1-alpha) * capitals[top_agents] * alpha
+    bottom_agents = np.nonzero(fitness < 1-top_quantile)[0]
+    # top_wants_mean = np.mean(wants[top_agents])
+    wants[bottom_agents] = 0 * alpha + wants[bottom_agents]*(1-alpha)
+    return wants
+
+
 def q_table_replace_process(Q, indices):
     n_agents = Q.shape[0]
     n_new = len(indices)
