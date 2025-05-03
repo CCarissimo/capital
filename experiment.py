@@ -21,7 +21,7 @@ class capitalLabourExperimentConfig:
     p_elasticities: np.ndarray
 
 
-def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities, p_redistribution):
+def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy, p_multipliers, p_elasticities, p_redistribution, p_wage):
 
     Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 1000
     Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 1000
@@ -49,7 +49,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         # labourers are 0 and capitalists are 1
 
         roles = np.where(potential_capitalists == 1, argmax_roles, 0)
-        #roles = np.where(wants > capitals, 0, 1)
+        # roles = np.where(wants > capitals, 0, 1)
 
         actions = np.where(roles == 1, e_greedy_select_action(Q_capital, S, epsilon), 0)
 
@@ -76,7 +76,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             labour_allocations = np.zeros(n_processes)
 
         else:  # at least one process funded
-            actions = np.where(roles == 0, e_greedy_select_action(Q_labour, S, epsilon, funded_processes), actions)
+            actions = np.where(roles == 0, e_greedy_select_action(Q_labour, S, epsilon, indices=None), actions)
             labourers_actions = actions[labourers]
 
             labour_allocations = np.array(
@@ -154,16 +154,18 @@ if __name__ == "__main__":
     # p_elasticities = np.array([0.8])
 
     n_agents = 100
-    n_processes = 5
+    n_processes = 1
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
-    timenergy = np.ones(n_agents)*50
+    timenergy = np.ones(n_agents)*10
     p_multipliers = np.random.random(size=n_processes)*10
     
-    p_elasticities = np.ones(n_processes) * 0.25
-    # p_elasticities = np.clip(np.random.random(size=n_processes), 0, 0.9)
+    p_elasticities = np.ones(n_processes) * 0.5
+    # p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
+    # p_elasticities = np.array([0.9, 0.9])
     
     p_redistribution = p_elasticities
+    p_wage = np.ones(n_processes) * 1
 
     n_iter = 10000
     epsilon = 0.1
@@ -182,7 +184,8 @@ if __name__ == "__main__":
         timenergy,
         p_multipliers,
         p_elasticities,
-        p_redistribution
+        p_redistribution,
+        p_wage
     )
 
     plot_dashboard(M, save=True)
