@@ -110,7 +110,6 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capitals[labourers] += rewards[labourers] #* labour_kinetic
         
         capitals = np.max(np.vstack([capitals - wants, np.zeros(n_agents)]), axis=0)
-        # print(np.max(capitals[capitalists]), np.min(capitals[capitalists]), np.max(capitals[labourers]), np.min(capitals[labourers]))
         
         n_capitalists = np.sum(roles)
         n_labourers = n_agents - n_capitalists
@@ -119,15 +118,15 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         M[t] = {
             "A": actions,
             "Y": produced,
-            "C": capitals,
+            "C": copy.deepcopy(capitals),
             "Cp": capital_allocations,
             "Lp": labour_allocations,
-            "R": rewards,
+            "R": copy.deepcopy(rewards),
             "nL": n_labourers,
             "nC": n_capitalists,
             "E": copy.deepcopy(p_elasticities),
             "W": wants,
-            "roles": roles
+            "roles": copy.deepcopy(roles)
         }
 
         ## evolution steps
@@ -154,19 +153,19 @@ if __name__ == "__main__":
     # p_elasticities = np.array([0.8])
 
     n_agents = 100
-    n_processes = 2
-    wants = np.random.randint(1, 10, size=n_agents).astype(float)
+    n_processes = 1
+    wants = np.random.randint(0, 10, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*50
     p_multipliers = np.random.random(size=n_processes)*10
     
     # p_elasticities = np.ones(n_processes) * 0.5
-    p_elasticities = np.clip(np.random.random(size=n_processes), 0, 0.9)
+    p_elasticities = np.clip(np.random.random(size=n_processes), 0.8, 0.9)
     
     p_redistribution = p_elasticities
 
     n_iter = 2000
-    epsilon = 0.01
+    epsilon = 0.1
     alpha = 0.1
     gamma = 0
 
