@@ -156,8 +156,8 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 1000
-    n_processes = 10
+    n_agents = 100
+    n_processes = 2
     wants = np.random.randint(1, 100, size=n_agents).astype(float)
     capitals = np.random.randint(1, 100, size=n_agents).astype(float)
     timenergy = np.ones(n_agents) * 10
@@ -171,8 +171,8 @@ if __name__ == "__main__":
     # p_wage = np.ones(n_processes) * 10
     p_wage = np.random.randint(1, 10, size=n_processes)
 
-    n_iter = 10000
-    epsilon = 0.1
+    n_iter = 2000
+    epsilon = 0.01
     alpha = 0.1
     gamma = 0
 

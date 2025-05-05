@@ -9,9 +9,9 @@ def redistribution(Y, beta, max_wage, capital_allocation, labour_allocation, n_l
     to_capitalists = Y * beta
     to_labourers = Y * (1 - beta)
 
-    wage = min(max_wage * (1 - beta), to_labourers / n_labourers)
-    remainder = to_labourers - n_labourers * wage    
-    to_capitalists += remainder
+    # wage = min(max_wage * (1 - beta), to_labourers / n_labourers)
+    # remainder = to_labourers - n_labourers * wage    
+    # to_capitalists += remainder
 
     # shortcut
     if capital_allocation == 0 or labour_allocation == 0:
