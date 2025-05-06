@@ -86,6 +86,8 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
                 mask = np.isin(capitalists_actions, worked_processes)
                 capitals[capitalists] = np.where(mask, capitals[capitalists] - capital_kinetic, capitals[capitalists])
 
+                print(p_multipliers, p_elasticities, capital_allocations, labour_allocations)
+
                 produced = [production(m, e, c, l) for m, e, c, l in
                             list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
 
