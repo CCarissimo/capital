@@ -33,7 +33,7 @@ if __name__ == "__main__":
     num_cpus = int(os.environ.get("SLURM_NTASKS", os.cpu_count()))  # specific for euler cluster
     print("identified cpus", num_cpus)
 
-    n_iter = [10 ** 1]  # I suggest to reduce it to 10**4
+    n_iter = 10 ** 1  # I suggest to reduce it to 10**4
 
     settings = get_param_combos(args.alpha, args.epsilon, args.gamma, n_iter)
 
