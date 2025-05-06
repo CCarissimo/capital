@@ -3,34 +3,6 @@ from itertools import product
 from experiment import *
 
 
-pow2 = [2**i for i in range(2, 11)]
-print(pow2, len(pow2))
-
-n_processes = []
-
-for exponent, na in enumerate(pow2):
-    exponent += 1
-    nproc = [2**j for j in range(0, exponent)]
-    n_processes.append(nproc)
-
-print(n_processes)
-
-params = []
-nparams = 0
-
-for i, na in enumerate(pow2):
-    combined = [(na, nproc) for nproc in n_processes[i]]
-    params.append(combined)
-    nparams += len(combined)
-
-print(params)
-print(len(params))
-print(nparams)
-
-# elasticities, cover all values from 0.1 to 0.9 for n_proc == 1 and sample uniformly at random for more n_proc
-# 9 values repeated 10 times == 90
-
-
 def flatten(xss):
     return [x for xs in xss for x in xs]
 
