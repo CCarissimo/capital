@@ -38,7 +38,7 @@ if __name__ == "__main__":
     settings = get_param_combos(args.alpha, args.epsilon, args.gamma, n_iter)
 
     # print(settings)
-    repeat_count = 10
+    repeat_count = 1
     results = multi_file_simulation(settings, data_addr, repeat_count, num_processes=num_cpus)
 
     results = flatten(results)
