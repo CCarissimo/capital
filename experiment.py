@@ -89,6 +89,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
             produced = [production(m, e, c, l) for m, e, c, l in
                         list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
+
             returns = np.array([redistribution(Y, e, c, l, np.sum(1 - roles)) for Y, e, c, l in
                                 list(
                                     zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
@@ -210,23 +211,29 @@ def run_small_capital_labour_processes(n_iter, n_agents, n_processes, alpha, eps
 
             worked_processes = np.nonzero(labour_allocations > 0)[0]
 
-            mask = np.isin(capitalists_actions, worked_processes)
-            capitals[capitalists] = np.where(mask, capitals[capitalists]-capital_kinetic, capitals[capitalists])
+            if len(worked_processes) == 0:
+                rewards = np.zeros(n_agents)
+                produced = np.zeros(n_processes)
 
-            produced = [production(m, e, c, l) for m, e, c, l in
-                        list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
-            returns = np.array([redistribution(Y, e, c, l, np.sum(1 - roles)) for Y, e, c, l in
-                                list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
+            else:  # at least one process was worked
+                mask = np.isin(capitalists_actions, worked_processes)
+                capitals[capitalists] = np.where(mask, capitals[capitalists]-capital_kinetic, capitals[capitalists])
 
-            rewards = np.zeros(n_agents)
-            rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])
-            rewards[capitalists] = np.array([returns[a, 1] for a in actions[capitalists]])
+                produced = [production(m, e, c, l) for m, e, c, l in
+                            list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
 
-            allocations = np.zeros(n_agents)
-            allocations[labourers] = labour_kinetic
-            allocations[capitalists] = capital_kinetic
-            rewards[capitalists] *= allocations[capitalists]
-            # rewards[labourers] /= np.sum(1 - roles)
+                returns = np.array([redistribution(Y, e, c, l, np.sum(1 - roles)) for Y, e, c, l in
+                                    list(zip(produced, redistribution_thresholds, capital_allocations, labour_allocations))])
+
+                rewards = np.zeros(n_agents)
+                rewards[labourers] = np.array([returns[a, 0] for a in actions[labourers]])
+                rewards[capitalists] = np.array([returns[a, 1] for a in actions[capitalists]])
+
+                allocations = np.zeros(n_agents)
+                allocations[labourers] = labour_kinetic
+                allocations[capitalists] = capital_kinetic
+                rewards[capitalists] *= allocations[capitalists]
+                # rewards[labourers] /= np.sum(1 - roles)
 
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
         Q_labour, _ = bellman_update_q_table(labourers, Q_labour, S, actions, rewards, S, alpha, gamma)
@@ -269,7 +276,7 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 100
+    n_agents = 4
     n_processes = 1
     wants = np.zeros(n_agents)  # np.random.randint(0, 100, size=n_agents).astype(float)
     capitals = np.ones(n_agents) * 100  # np.random.randint(1, 50, size=n_agents).astype(float)
