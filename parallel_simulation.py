@@ -67,28 +67,29 @@ def record2df(record, params, repeat_no):
     frame = asdict(params)
 
     exclusion_threshold = 0.2
+    times = sorted(record.keys())[int(len(record.keys())*0.2):-1]
 
-    Y = np.array([record[t]["Y"].mean() for t in range(0, params.n_iter)])
+    Y = np.array([record[t]["Y"].mean() for t in times])
     Ymean = np.mean(Y)
     Ymedian = np.median(Y)
     Ystd = np.std(Y)
 
-    C = np.array([record[t]["C"].mean() for t in range(0, params.n_iter)])
+    C = np.array([record[t]["C"].mean() for t in times])
     Cmean = np.mean(C)
     Cmedian = np.median(C)
     Cstd = np.std(C)
 
-    nL = np.array([record[t]["nL"].mean() for t in range(0, params.n_iter)])
+    nL = np.array([record[t]["nL"].mean() for t in times])
     nLmean = np.mean(nL)
     nLmedian = np.median(nL)
     nLstd = np.std(nL)
 
-    nC = np.array([record[t]["nC"].mean() for t in range(0, params.n_iter)])
+    nC = np.array([record[t]["nC"].mean() for t in times])
     nCmean = np.mean(nC)
     nCmedian = np.median(nC)
     nCstd = np.std(nC)
 
-    G = np.array([gini(M[t]["C"]) for t in range(0, params.n_iter)])
+    G = np.array([gini(record[t]["C"]) for t in times])
     Gmean = np.mean(G)
     Gmedian = np.median(G)
     Gstd = np.std(G)
