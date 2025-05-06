@@ -39,7 +39,7 @@ def get_param_combos(alpha, epsilon, gamma, n_iter):
                     alpha,
                     epsilon,
                     gamma,
-                    np.array(elasticity))
+                    np.array([elasticity]))
                 configurations.append(config)
         else:
             for rep in range(9):
@@ -55,3 +55,6 @@ def get_param_combos(alpha, epsilon, gamma, n_iter):
                 configurations.append(config)
 
     return configurations
+
+
+# print(get_param_combos(0.1, 0.1, 0.1, 10))
