@@ -146,7 +146,7 @@ def run_small_capital_labour_processes(n_iter, n_agents, n_processes, alpha, eps
 
     capitals = np.ones(n_agents)*100
     timenergy = np.ones(n_agents)*100
-    p_multipliers = np.ones(n_processes)
+    p_multipliers = np.ones(n_processes)*2
     wants = np.zeros(n_agents)
 
     M = run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy,
