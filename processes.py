@@ -42,3 +42,7 @@ def evolve_processes(elasticities, capital_allocations):
     random_mutation = np.random.normal(0, 0.1, size=len(not_funded_processes))
     elasticities[not_funded_processes] += random_mutation
     return np.clip(elasticities, 0, 1), not_funded_processes
+
+
+def theoretical_max_production(mult, elasticity, max_labour):
+    return np.exp(np.log(mult*max_labour**(1-elasticity))/(1-elasticity))
