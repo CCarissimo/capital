@@ -42,24 +42,30 @@ def plot_dashboard(M, save=False):
     # axs[1].set_ylim((10e-2, max(produced_padded)))
 
     # --- Plot capitals ---
-    if capitals.shape[1] > 10:
-        avg_capitals = np.mean(capitals, axis=1)
-        std_capitals = np.std(capitals, axis=1)
-        # axs[2].plot(times, avg_capitals)
-        # axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
-        axs[2].plot(times, np.sum(capitals, axis=1), color='green', label='capital sum')
+    # if capitals.shape[1] > 10:
+    #     avg_capitals = np.mean(capitals, axis=1)
+    #     std_capitals = np.std(capitals, axis=1)
+    #     # axs[2].plot(times, avg_capitals)
+    #     # axs[2].fill_between(times, avg_capitals - std_capitals, avg_capitals + std_capitals, color='blue', alpha=0.2, label='±1 Std Dev')
+    #     axs[2].plot(times, np.sum(capitals, axis=1), color='green', label='capital sum')
+    #
+    #     axs[2].plot(times, (capitals * roles).max(axis=1), color='purple')
+    #     axs[2].plot(times, (capitals * (1-roles)).max(axis=1), color='orange')
+    #     axs[2].plot(times, (capitals * roles).sum(axis=1)/roles.sum(axis=1), color='blue')
+    #     axs[2].plot(times, (capitals * (1 - roles)).sum(axis=1)/(1-roles).sum(axis=1), color='red')
+    # else:
+    #     axs[2].plot(times, capitals)
 
-        axs[2].plot(times, (capitals * roles).max(axis=1), color='purple')
-        axs[2].plot(times, (capitals * (1-roles)).max(axis=1), color='orange')        
-        axs[2].plot(times, (capitals * roles).sum(axis=1)/roles.sum(axis=1), color='blue')        
-        axs[2].plot(times, (capitals * (1 - roles)).sum(axis=1)/(1-roles).sum(axis=1), color='red')
-    else:
-        axs[2].plot(times, capitals)
+    avg_roles = roles.mean(axis=0)
+    avg_capitals = capitals.mean(axis=0)
+    axs[2].scatter(avg_roles, avg_capitals)
+
     
-    axs[2].set_title("Capitals per agent")
-    axs[2].set_xlabel("Time")
+    axs[2].set_title("avg capitals, avg role")
+    axs[2].set_xlabel("Role")
     axs[2].set_ylabel("Capital")
     axs[2].set_yscale("log")
+    # axs[2].set_xlim((0, 1))
 
     # --- Plot capital allocations ---
     cap_alloc_sizes = [M[t]["Cp"] for t in times]
@@ -101,10 +107,15 @@ def plot_dashboard(M, save=False):
     axs[7].set_xlabel("Time")
     axs[7].set_ylabel("e")
 
-    axs[8].plot(times, wants)
-    axs[8].set_title("Agent Wants")
-    axs[8].set_xlabel("Time")
-    axs[8].set_ylabel("W")
+    avg_wants = wants.mean(axis=0)
+    avg_initial_surplus = capitals[0, :] - avg_wants
+    # axs[8].plot(times, wants)
+    axs[8].scatter(avg_wants, avg_capitals, color="cornflowerblue")
+    axs[8].scatter(avg_wants, avg_initial_surplus, color="black")
+    axs[8].set_title("avg capitals, wants")
+    axs[8].set_xlabel("wants")
+    axs[8].set_ylabel("capitals")
+    axs[8].set_yscale("log")
 
     axs[9].plot(times, n_labourers, color='red')
     axs[9].plot(times, n_capitalists, color='blue')

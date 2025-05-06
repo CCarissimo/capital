@@ -67,7 +67,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         capital_allocations = np.array(
             [np.where(capitalists_actions == i, capital_kinetic, 0).sum() for i in range(n_processes)])
 
-        capitals[capitalists] -= surplus[capitalists]
+        # capitals[capitalists] -= surplus[capitalists]  # already subtracted later with mask
 
         funded_processes = np.nonzero(capital_allocations > 0)[0]
 
@@ -86,7 +86,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             worked_processes = np.nonzero(labour_allocations > 0)[0]
 
             mask = np.isin(capitalists_actions, worked_processes)
-            capitals[capitalists] = np.where(mask, 0, capitals[capitalists])
+            capitals[capitalists] = np.where(mask, capitals[capitalists]-capital_kinetic, capitals[capitalists])
 
             produced = [production(m, e, c, l) for m, e, c, l in
                         list(zip(p_multipliers, p_elasticities, capital_allocations, labour_allocations))]
@@ -153,19 +153,19 @@ if __name__ == "__main__":
     # p_elasticities = np.array([0.8])
 
     n_agents = 100
-    n_processes = 1
-    wants = np.random.randint(0, 10, size=n_agents).astype(float)
-    capitals = np.random.randint(1, 100, size=n_agents).astype(float)
+    n_processes = 10
+    wants = np.random.randint(0, 100, size=n_agents).astype(float)
+    capitals = np.random.randint(1, 50, size=n_agents).astype(float)
     timenergy = np.ones(n_agents)*50
-    p_multipliers = np.random.random(size=n_processes)*10
+    p_multipliers = np.random.random(size=n_processes)*2
     
-    # p_elasticities = np.ones(n_processes) * 0.5
-    p_elasticities = np.clip(np.random.random(size=n_processes), 0.8, 0.9)
+    p_elasticities = np.ones(n_processes) * 0.75
+    # p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
     
     p_redistribution = p_elasticities
 
-    n_iter = 2000
-    epsilon = 0.1
+    n_iter = 10000
+    epsilon = 0.01
     alpha = 0.1
     gamma = 0
 
