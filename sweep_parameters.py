@@ -1,15 +1,16 @@
 import numpy as np
 from itertools import product
+from experiment import *
 
-pow2 = np.array([2**i for i in range(1, 11)])
+
+pow2 = [2**i for i in range(2, 11)]
 print(pow2, len(pow2))
 
 n_processes = []
 
-for i, na in enumerate(pow2):
-    half = na/2
-    exponent = i + 1
-    nproc = np.array([2**i for i in range(0, exponent)])
+for exponent, na in enumerate(pow2):
+    exponent += 1
+    nproc = [2**j for j in range(0, exponent)]
     n_processes.append(nproc)
 
 print(n_processes)
@@ -25,3 +26,60 @@ for i, na in enumerate(pow2):
 print(params)
 print(len(params))
 print(nparams)
+
+# elasticities, cover all values from 0.1 to 0.9 for n_proc == 1 and sample uniformly at random for more n_proc
+# 9 values repeated 10 times == 90
+
+
+def flatten(xss):
+    return [x for xs in xss for x in xs]
+
+
+def get_param_combos(alpha, epsilon, gamma, n_iter, repetitions):
+    pow2 = [2 ** i for i in range(2, 11)]
+    n_processes = []
+
+    for exponent, na in enumerate(pow2):
+        exponent += 1
+        nproc = [2 ** j for j in range(0, exponent)]
+        n_processes.append(nproc)
+
+    params = []
+    nparams = 0
+
+    for i, na in enumerate(pow2):
+        combined = [(na, nproc) for nproc in n_processes[i]]
+        params.append(combined)
+        nparams += len(combined)
+
+    params = flatten(params)
+
+    configurations = []
+
+    for n_agents, n_processes in params:
+
+        if n_processes == 1:
+            for elasticity in np.linspace(0.1, 0.9, 9):
+                config = smallCapitalLabourExperimentConfig(
+                    n_iter,
+                    n_agents,
+                    n_processes,
+                    alpha,
+                    epsilon,
+                    gamma,
+                    np.array(elasticity))
+                configurations.append(config)
+        else:
+            for rep in range(repetitions * 9):
+                elasticity = np.random.random(size=n_processes) * 0.8 + 0.1
+                config = smallCapitalLabourExperimentConfig(
+                    n_iter,
+                    n_agents,
+                    n_processes,
+                    alpha,
+                    epsilon,
+                    gamma,
+                    elasticity)
+                configurations.append(config)
+
+    return configurations
