@@ -7,13 +7,13 @@ def flatten(xss):
     return [x for xs in xss for x in xs]
 
 
-def get_param_combos(alpha, epsilon, gamma, n_iter, repetitions):
+def get_param_combos(alpha, epsilon, gamma, n_iter):
     pow2 = [2 ** i for i in range(2, 11)]
     n_processes = []
 
-    for exponent, na in enumerate(pow2):
-        exponent += 1
-        nproc = [2 ** j for j in range(0, exponent)]
+    for i in range(len(pow2)):
+        i += 1
+        nproc = [2 ** j for j in range(0, i)]
         n_processes.append(nproc)
 
     params = []
@@ -42,7 +42,7 @@ def get_param_combos(alpha, epsilon, gamma, n_iter, repetitions):
                     np.array(elasticity))
                 configurations.append(config)
         else:
-            for rep in range(repetitions * 9):
+            for rep in range(9):
                 elasticity = np.random.random(size=n_processes) * 0.8 + 0.1
                 config = smallCapitalLabourExperimentConfig(
                     n_iter,

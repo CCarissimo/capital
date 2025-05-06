@@ -5,13 +5,14 @@ from experiment import capitalLabourExperimentConfig
 import itertools
 import pandas as pd
 import numpy as np
+from sweep_parameters import get_param_combos
 
 
 if __name__ == "__main__":
     # Initialize the parser
     parser = argparse.ArgumentParser(description="input simulation parameters")
 
-    # Add arguments #TODO
+    # Add arguments
     parser.add_argument('alpha', type=float, help="learning rate")
     parser.add_argument('epsilon', type=float, help="exploration rate")
     parser.add_argument('gamma', type=float, help="discount factor")
@@ -32,34 +33,9 @@ if __name__ == "__main__":
     num_cpus = int(os.environ.get("SLURM_NTASKS", os.cpu_count()))  # specific for euler cluster
     print("identified cpus", num_cpus)
 
-    n_iter = [10 ** 2]  # I suggest to reduce it to 10**4
-    n_agents = [100]
-    n_processes = [10]
-    alpha = [0.1]
-    epsilon = [0.01]
-    gamma = [0.1]
-    wants = []
-    capitals = []
-    timenergy = []
-    multipliers = []
-    elasticities = []
+    n_iter = [10 ** 1]  # I suggest to reduce it to 10**4
 
-    settings = [
-        capitalLabourExperimentConfig(I, N, P, a, e, g, W, C, T, pM, pE)
-        for I, N, P, a, e, g, W, C, T, pM, pE in itertools.product(
-            n_iter,
-            n_agents,
-            n_processes,
-            alpha,
-            epsilon,
-            gamma,
-            wants,
-            capitals,
-            timenergy,
-            multipliers,
-            elasticities
-        )
-    ]
+    settings = get_param_combos(args.alpha, args.epsilon, args.gamma, n_iter)
 
     # print(settings)
     repeat_count = 10
@@ -67,6 +43,6 @@ if __name__ == "__main__":
 
     results = flatten(results)
     df = pd.DataFrame(results)
-    filename = f"player1params_a({args.alpha})_e({args.epsilon})_g({args.gamma}).csv"  #TODO
+    filename = f"player1params_a({args.alpha})_e({args.epsilon})_g({args.gamma}).csv"
     destination = dataframes_addr + filename
     df.to_csv(destination)

@@ -6,28 +6,23 @@ import numpy as np
 import pandas as pd
 import itertools
 import multiprocessing as mp
-import re
 import os
 from tqdm import tqdm
-import pickle
 from dataclasses import asdict
 from experiment import *
-# from learning_in_games.games import braess_augmented_network
-from processes import gini
+from processes import gini, theoretical_max_production
 
 
-def player1params_dirname(PLACEHOLDER):
-    return f"/params_a({PLACEHOLDER})/"
+def params_dirname(alpha, epsilon, gamma):
+    return f"/params_a({alpha})_e({epsilon})_g({gamma})/"
 
 
 def run_and_store_one_setting(args):
 
     base_addr, repeat_count, params = args
-    records = {}
-    file_name = str(params)
 
     # extract player 1 parameters to create directory for player 1 settings
-    sub_directory_name = player1params_dirname(params.alpha)  #TODO
+    sub_directory_name = params_dirname(params.alpha, params.epsilon, params.gamma)
     save_path = base_addr + sub_directory_name
     if not os.path.isdir(save_path):
         os.makedirs(save_path, exist_ok=True)
@@ -36,17 +31,13 @@ def run_and_store_one_setting(args):
     # os.makedirs(save_path + "/" + file_name)
     extracted_records = []
     for i in range(repeat_count):
-        run_results = run_capital_labour_processes(
+        run_results = run_small_capital_labour_processes(
             params.n_iter,
             params.n_agents,
             params.n_processes,
             params.alpha,
             params.epsilon,
             params.gamma,
-            params.wants,
-            params.capitals,
-            params.timenergy,
-            params.p_multipliers,
             params.p_elasticities,
         )
         # records[i] = run_results
@@ -66,25 +57,35 @@ def run_and_store_one_setting(args):
 def record2df(record, params, repeat_no):
     frame = asdict(params)
 
-    exclusion_threshold = 0.2
-    times = sorted(record.keys())[int(len(record.keys())*0.2):-1]
+    exclusion_threshold = 0.5
+    times = sorted(record.keys())[int(len(record.keys())*exclusion_threshold):-1]
 
-    Y = np.array([record[t]["Y"].mean() for t in times])
-    Ymean = np.mean(Y)
-    Ymedian = np.median(Y)
-    Ystd = np.std(Y)
+    Y = np.array([record[t]["Y"] for t in times])
+    Ymean = np.mean(Y, axis=-1)
+    Ymedian = np.median(Y, axis=-1)
+    Ystd = np.std(Y, axis=-1)
+    Ymax = np.max(Y, axis=-1)
 
-    C = np.array([record[t]["C"].mean() for t in times])
+    rewards = np.array([record[t]["R"] for t in times])
+    roles = np.array([record[t]["roles"] for t in times])
+    avg_reward_capital = (rewards * roles).mean()
+    avg_reward_labour = (rewards * (1-roles)).mean()
+    max_reward_capital = (rewards * roles).max()
+
+    max_labour = params.n_agents * 100  # fixed at 100 timenergy
+    Yoptimum = theoretical_max_production(2, params.p_elasticities, max_labour)
+
+    C = np.array([np.mean(record[t]["C"]) for t in times])
     Cmean = np.mean(C)
     Cmedian = np.median(C)
     Cstd = np.std(C)
 
-    nL = np.array([record[t]["nL"].mean() for t in times])
+    nL = np.array([np.mean(record[t]["nL"]) for t in times])
     nLmean = np.mean(nL)
     nLmedian = np.median(nL)
     nLstd = np.std(nL)
 
-    nC = np.array([record[t]["nC"].mean() for t in times])
+    nC = np.array([np.mean(record[t]["nC"]) for t in times])
     nCmean = np.mean(nC)
     nCmedian = np.median(nC)
     nCstd = np.std(nC)
@@ -96,9 +97,11 @@ def record2df(record, params, repeat_no):
 
     row = {
         "repetition": repeat_no,
+        "Yopt": Yoptimum,
         "Y": Ymean,
         "Ymedian": Ymedian,
         "Ystd": Ystd,
+        "Ymax": Ymax,
         "C": Cmean,
         "Cmedian": Cmedian,
         "Cstd": Cstd,
@@ -111,6 +114,9 @@ def record2df(record, params, repeat_no):
         "G": Gmean,
         "Gmedian": Gmedian,
         "Gstd": Gstd,
+        "avgRcapital": avg_reward_capital,
+        "avgRlabour": avg_reward_labour,
+        "maxRcapital": max_reward_capital,
     }
 
     frame.update(row)
@@ -145,30 +151,22 @@ def flatten(xss):
 
 if __name__ == '__main__':
     n_iter = [10 ** 2]  # I suggest to reduce it to 10**4
-    n_agents = [100]
-    n_processes = [10]
+    n_agents = [10]
+    n_processes = [1]
     alpha = [0.1]
     epsilon = [0.01]
     gamma = [0.1]
-    wants = []
-    capitals = []
-    timenergy = []
-    multipliers = []
-    elasticities = []
+    elasticities = [np.array([0.5])]
 
     settings = [
-        capitalLabourExperimentConfig(I, N, P, a, e, g, W, C, T, pM, pE)
-        for I, N, P, a, e, g, W, C, T, pM, pE in itertools.product(
+        smallCapitalLabourExperimentConfig(I, N, P, a, e, g, pE)
+        for I, N, P, a, e, g, pE in itertools.product(
             n_iter,
             n_agents,
             n_processes,
             alpha,
             epsilon,
             gamma,
-            wants,
-            capitals,
-            timenergy,
-            multipliers,
             elasticities
         )
     ]
@@ -177,14 +175,14 @@ if __name__ == '__main__':
     print("identified cpus", num_cpus)
     worker_count = num_cpus
 
-    addr = "/Users/ccarissimo/data/test_braess/data"
+    addr = "/Users/cesarecarissimo/data/test_capital/"
 
     repeat_count = 40
     results = multi_file_simulation(settings, addr, repeat_count, num_processes=num_cpus)
 
     results = flatten(results)
     df = pd.DataFrame(results)
-    destination = "/Users/ccarissimo/data/test_braess/test_outfile.csv"
+    destination = "/Users/cesarecarissimo/data/test_capital/test_outfile.csv"
     df.to_csv(destination)
 
     # convert_directory(addr, "/cluster/home/ccarissimo/Bachelors_Project_Simulations/Utils/Simulations/duopoly_5_full_sweep_10e6_2.csv", RecordUtils.RecordMode.PICKLE)
