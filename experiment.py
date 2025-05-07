@@ -123,7 +123,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
         }
 
         if np.sum(produced) == 0:
-            last_hundred = np.array([M[j]["Y"].sum() for j in range(t-100, t)])
+            last_hundred = np.array([np.sum(M[j]["Y"]) for j in range(t-100, t)])
             if last_hundred.mean() == 0:
                 break
 
