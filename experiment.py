@@ -24,8 +24,8 @@ class capitalLabourExperimentConfig:
 def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_processes, wants, capitals, timenergy,
                                  p_multipliers, p_elasticities, p_redistribution):
 
-    Q_capital = np.random.random(size=(n_agents, 1, n_processes)) * 100
-    Q_labour = np.random.random(size=(n_agents, 1, n_processes)) * 100
+    Q_capital = np.random.random(size=(n_agents, 1, n_processes))
+    Q_labour = np.random.random(size=(n_agents, 1, n_processes))
     S = np.zeros((n_agents)).astype(int)
     redistribution_thresholds = p_elasticities
 
@@ -95,6 +95,7 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
                 allocations[labourers] = labour_kinetic
                 allocations[capitalists] = capital_kinetic
                 rewards[capitalists] *= allocations[capitalists]
+                rewards[labourers] *= allocations[labourers]
                 # rewards[labourers] /= np.sum(1 - roles)
 
         Q_capital, _ = bellman_update_q_table(capitalists, Q_capital, S, actions, rewards, S, alpha, gamma)
@@ -168,15 +169,15 @@ if __name__ == "__main__":
     # p_multipliers = np.array([4])
     # p_elasticities = np.array([0.8])
 
-    n_agents = 4
-    n_processes = 1
+    n_agents = 100
+    n_processes = 2
     wants = np.zeros(n_agents)  # np.random.randint(0, 100, size=n_agents).astype(float)
     capitals = np.ones(n_agents) * 100  # np.random.randint(1, 50, size=n_agents).astype(float)
     timenergy = np.ones(n_agents) * 100
     p_multipliers = np.ones(n_processes) * 2  # np.random.random(size=n_processes)
     
-    p_elasticities = np.ones(n_processes) * 0.25
-    # p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
+    # p_elasticities = np.ones(n_processes) * 0.75
+    p_elasticities = np.clip(np.random.random(size=n_processes), 0.1, 0.9)
     
     p_redistribution = p_elasticities
 

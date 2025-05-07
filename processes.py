@@ -6,8 +6,7 @@ def production(multiplier, elasticity, capital, labour):
 
 
 def redistribution(Y, beta, capital_allocation, labour_allocation, n_labourers):
-    to_capitalists = Y * beta
-    to_labourers = Y * (1 - beta)
+
 
     # wage = min(10 * (1 - beta), to_labourers / n_labourers)
     # remainder = to_labourers - n_labourers * wage    
@@ -17,8 +16,11 @@ def redistribution(Y, beta, capital_allocation, labour_allocation, n_labourers):
     if capital_allocation == 0 or labour_allocation == 0:
         return [.0, .0]
     else:
-        capital_return = to_capitalists / capital_allocation
-        labour_return = to_labourers / n_labourers
+        to_capitalists = beta * (labour_allocation / capital_allocation) ** (1 - beta)
+        to_labourers = (1 - beta) * (capital_allocation / labour_allocation) ** beta
+
+        capital_return = to_capitalists
+        labour_return = to_labourers
         return [labour_return, capital_return]
 
 
