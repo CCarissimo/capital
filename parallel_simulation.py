@@ -27,8 +27,6 @@ def run_and_store_one_setting(args):
     if not os.path.isdir(save_path):
         os.makedirs(save_path, exist_ok=True)
 
-    # create tmp directory
-    # os.makedirs(save_path + "/" + file_name)
     extracted_records = []
     for i in range(repeat_count):
         run_results = run_small_capital_labour_processes(
@@ -40,16 +38,8 @@ def run_and_store_one_setting(args):
             params.gamma,
             params.p_elasticities,
         )
-        # records[i] = run_results
+
         extracted_records.append(record2df(run_results, params, i))
-
-        # q_table = run_results[params.n_iter]["Q"]
-        # np.savez_compressed(f"{save_path}{file_name}_run{i}", a=q_table)
-
-    # records["params"] = params
-
-    # with open(f"{save_path}{file_name}.pkl", "wb") as file:
-    #     pickle.dump(records, file)
 
     return extracted_records
 
