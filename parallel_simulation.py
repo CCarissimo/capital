@@ -51,10 +51,11 @@ def record2df(record, params, repeat_no):
     times = sorted(record.keys())[int(len(record.keys())*exclusion_threshold):-1]
 
     Y = np.array([record[t]["Y"] for t in times])
-    Ymean = np.mean(Y, axis=-1)
-    Ymedian = np.median(Y, axis=-1)
-    Ystd = np.std(Y, axis=-1)
-    Ymax = np.max(Y, axis=-1)
+    Yall = np.mean(Y)
+    Ymean = np.mean(Y, axis=0)
+    Ymedian = np.median(Y, axis=0)
+    Ystd = np.std(Y, axis=0)
+    Ymax = np.max(Y, axis=0)
 
     rewards = np.array([record[t]["R"] for t in times])
     roles = np.array([record[t]["roles"] for t in times])
@@ -63,7 +64,7 @@ def record2df(record, params, repeat_no):
     max_reward_capital = (rewards * roles).max()
 
     max_labour = params.n_agents * 100  # fixed at 100 timenergy
-    Yoptimum = theoretical_max_production(2, params.p_elasticities, max_labour)
+    Yoptimum = theoretical_max_production(2, params.p_elasticities, max_labour)  # multipliers fixed at 2
 
     C = np.array([np.mean(record[t]["C"]) for t in times])
     Cmean = np.mean(C)
@@ -89,6 +90,7 @@ def record2df(record, params, repeat_no):
         "repetition": repeat_no,
         "Yopt": Yoptimum,
         "Y": Ymean,
+        "Yall": Yall,
         "Ymedian": Ymedian,
         "Ystd": Ystd,
         "Ymax": Ymax,
@@ -107,6 +109,7 @@ def record2df(record, params, repeat_no):
         "avgRcapital": avg_reward_capital,
         "avgRlabour": avg_reward_labour,
         "maxRcapital": max_reward_capital,
+        "lastt": times[-1]
     }
 
     frame.update(row)

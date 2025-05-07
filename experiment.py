@@ -34,12 +34,6 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
 
     for t in range(n_iter):
 
-        if np.sum(capitals) == 0:
-            death_counter += 1
-            if death_counter > 100:
-                # print(np.sum(roles))
-                break
-
         surplus = capitals - wants
 
         potential_capitalists = np.where(surplus > 0, 1, 0)
@@ -127,6 +121,11 @@ def run_capital_labour_processes(n_iter, epsilon, alpha, gamma, n_agents, n_proc
             "W": wants,
             "roles": copy.deepcopy(roles)
         }
+
+        if np.sum(produced) == 0:
+            last_hundred = np.array([M[j]["Y"].sum() for j in range(t-100, t)])
+            if last_hundred.mean() == 0:
+                break
 
     return M
 
