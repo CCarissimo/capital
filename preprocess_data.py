@@ -16,8 +16,7 @@ def process_frame(entry):
     p_at_max_YdivYopt = p_elasticities[np.argmax(Y_over_Yopt)]
     frac_below_mean_Y = np.mean(Y < np.mean(Y))
 
-    capital_strength = (p_at_max_Y - np.min(p_elasticities)) \
-                       / (np.min(p_elasticities) - np.min(p_elasticities))
+    capital_strength = (p_at_max_Y - np.min(p_elasticities)) / (np.max(p_elasticities) - np.min(p_elasticities) + 1e-10)
 
     results = {
         'n_processes': n_processes,
@@ -27,7 +26,7 @@ def process_frame(entry):
         'frac_below_mean_Y': frac_below_mean_Y,
         'Y_over_Yopt': Y_over_Yopt[np.argmax(Y)],
         'capital_strength': capital_strength,
-        'ehash': hash(p_elasticities)
+        'ehash': hash(p_elasticities.data)
     }
 
     return results
