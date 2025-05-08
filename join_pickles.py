@@ -27,7 +27,7 @@ def aggregate_files(files):
     D = defaultdict(list)
     df_frames = []
 
-    for file_list in files:
+    for file_list in tqdm(files):
         for frame in file_list:
             nproc = frame["n_processes"]
             D[nproc].append(copy.deepcopy(frame))
