@@ -26,6 +26,7 @@ def aggregate_files(files):
 
     D = defaultdict(list)
     df_frames = []
+
     for file_list in files:
         for frame in file_list:
             nproc = frame["n_processes"]
@@ -37,9 +38,9 @@ def aggregate_files(files):
             frame["Ystd"] = np.mean(frame["Ystd"])
             frame["Ymedian"] = np.mean(frame["Ymedian"])
             frame["Ymax"] = np.mean(frame["Ymax"])
-            df_frames.append(pd.DataFrame(frame))
+            # df_frames.append(pd.DataFrame(frame))
 
-    df = pd.concat(df_frames)
+    df = pd.DataFrame(df_frames)
 
     # df = df.groupby(["alpha", "epsilon", "gamma", "n_agents", "n_processes"]).mean()
 
