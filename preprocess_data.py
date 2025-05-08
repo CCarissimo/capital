@@ -26,8 +26,8 @@ def process_frame(entry):
         'p_at_max_YdivYopt': p_at_max_YdivYopt,
         'frac_below_mean_Y': frac_below_mean_Y,
         'Y_over_Yopt': Y_over_Yopt[np.argmax(Y)],
-        'capital_strength': capital_strength
-
+        'capital_strength': capital_strength,
+        'ehash': hash(p_elasticities)
     }
 
     return results
