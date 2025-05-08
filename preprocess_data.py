@@ -9,9 +9,6 @@ def process_frame(entry):
     Ymax = np.array(entry['Ymax'])
     Yopt = np.array(entry['Yopt'])
 
-    if np.where(p_elasticities < 0.1, 1, 0).sum() > 0:
-        print(entry)
-
     # Compute metrics
     p_at_max_Y = p_elasticities[np.argmax(Y)]
     p_at_max_Ymax = p_elasticities[np.argmax(Ymax)]
@@ -19,12 +16,18 @@ def process_frame(entry):
     p_at_max_YdivYopt = p_elasticities[np.argmax(Y_over_Yopt)]
     frac_below_mean_Y = np.mean(Y < np.mean(Y))
 
+    capital_strength = (p_at_max_Y - np.min(p_elasticities)) \
+                       / (np.min(p_elasticities) - np.min(p_elasticities))
+
     results = {
         'n_processes': n_processes,
         'p_at_max_Y': p_at_max_Y,
         'p_at_max_Ymax': p_at_max_Ymax,
         'p_at_max_YdivYopt': p_at_max_YdivYopt,
         'frac_below_mean_Y': frac_below_mean_Y,
+        'Y_over_Yopt': Y_over_Yopt[np.argmax(Y)],
+        'capital_strength': capital_strength
+
     }
 
     return results
