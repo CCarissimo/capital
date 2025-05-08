@@ -1,5 +1,11 @@
 import numpy as np
 import pandas as pd
+import hashlib
+
+
+def hash_array(arr):
+    arr_bytes = arr.tobytes()
+    return hashlib.sha256(arr_bytes).hexdigest()
 
 
 def process_frame(entry):
@@ -26,7 +32,7 @@ def process_frame(entry):
         'frac_below_mean_Y': frac_below_mean_Y,
         'Y_over_Yopt': Y_over_Yopt[np.argmax(Y)],
         'capital_strength': capital_strength,
-        'ehash': hash(p_elasticities.data)
+        'ehash': hash_array(p_elasticities)
     }
 
     return results
