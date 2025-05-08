@@ -6,6 +6,7 @@ import pickle
 from collections import defaultdict
 import copy
 import numpy as np
+from preprocess_data import process_dictionary, process_frame
 
 
 def all2df(dir_addr):
@@ -29,15 +30,15 @@ def aggregate_files(files):
 
     for file_list in tqdm(files):
         for frame in file_list:
-            nproc = frame["n_processes"]
-            D[nproc].append(copy.deepcopy(frame))
+            new_metrics = process_frame(frame)
+            frame.update(new_metrics)
 
             frame["p_elasticities"] = np.mean(frame["p_elasticities"])
             frame["Y"] = np.mean(frame["Y"])
-            frame["Yopt"] = np.mean(frame["Yopt"])
+            frame["Yopt"] = np.max(frame["Yopt"])
             frame["Ystd"] = np.mean(frame["Ystd"])
-            frame["Ymedian"] = np.mean(frame["Ymedian"])
-            frame["Ymax"] = np.mean(frame["Ymax"])
+            frame["Ymedian"] = np.median(frame["Ymedian"])
+            frame["Ymax"] = np.max(frame["Ymax"])
             # df_frames.append(pd.DataFrame(frame))
 
     df = pd.DataFrame(df_frames)
@@ -50,12 +51,12 @@ def aggregate_files(files):
 
     # add any other things to be calculated on the merged dataframe
 
-    return df, D
+    return df
 
 
 def main(directory, save_directory):
     final_df = all2df(directory)
-    final_df, D = aggregate_files(final_df)
+    final_df = aggregate_files(final_df)
     final_df.to_csv(save_directory + "process_experiments.csv")
     return final_df
 
@@ -65,7 +66,6 @@ if __name__ == "__main__":
     save_directory = "/cluster/work/coss/ccarissimo/capital_labour_processes/"
 
     files = all2df(directory)
-    final_df, D = aggregate_files(files)
+    final_df = aggregate_files(files)
     final_df.to_csv(save_directory + "process_experiments.csv")
-    with open(save_directory + "process_experiments.pkl", "wb") as file:
-        pickle.dump(D, file)
+
