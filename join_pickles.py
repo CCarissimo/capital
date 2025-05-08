@@ -37,7 +37,7 @@ def aggregate_files(files):
             frame["Ystd"] = np.mean(frame["Ystd"])
             frame["Ymedian"] = np.mean(frame["Ymedian"])
             frame["Ymax"] = np.mean(frame["Ymax"])
-            df_frames.append(frame)
+            df_frames.append(pd.DataFrame(frame))
 
     df = pd.concat(df_frames)
 
